@@ -59,6 +59,8 @@ thành mã riêng, ví dụ:
 const SECRET_TOKEN = 'bao-kt-2026-xxxxx';
 ```
 
+Không đưa token thật lên GitHub public repo.
+
 ## 4. Khởi tạo sheet
 
 Trong Apps Script, chọn hàm:
@@ -115,34 +117,48 @@ Nếu đúng sẽ trả về:
 {"ok":true,"message":"Apps Script backend đang hoạt động."}
 ```
 
-## 7. Nối frontend với Apps Script
+## 7. Nối frontend với Apps Script trong web
 
-Frontend đã có file client:
-
-```text
-src/services/sheetsBackend.ts
-```
-
-Hiện tại app vẫn còn màn cài đặt Google Drive cũ. Bước tiếp theo nên thêm ô cài đặt:
+Mở web:
 
 ```text
-Apps Script API URL
-Apps Script Token
+https://dvbclub.github.io/PM-KTCPTLMT/
 ```
 
-và lưu vào localStorage key:
+Vào tab:
 
 ```text
-qd_apps_script_api_url
-qd_apps_script_api_token
+Cài Đặt Backend
 ```
 
-Sau đó frontend sẽ gọi Apps Script thay vì `/api/...`.
+Dán:
 
-## Ghi chú quan trọng
+```text
+Apps Script Web App URL
+Token
+```
+
+Bấm:
+
+```text
+Lưu cấu hình & tải dữ liệu
+```
+
+Từ lúc đó, các thao tác thêm/sửa/xóa trong các tab sau sẽ lưu cả database về Google Sheets:
+
+```text
+Sổ Chi Phí & Tạm Ứng
+Theo Dõi Quỹ
+Tiến Trình Hồ Sơ
+Vật Tư Tồn Kho
+Báo Cáo Gửi Sếp
+```
+
+## 8. Ghi chú kỹ thuật
 
 - GitHub Pages không chạy được `server.ts`, Express hoặc Node backend.
-- Build hiện đã đổi thành `vite build` để ra frontend tĩnh.
+- Build đã đổi thành `vite build` để ra frontend tĩnh.
 - `vite.config.ts` đã đặt base là `/PM-KTCPTLMT/` để đúng đường dẫn GitHub Pages.
-- Không đưa token thật vào GitHub public repo.
-- Token nên nhập ở màn hình cài đặt của frontend hoặc lưu riêng trên máy người dùng.
+- Frontend hiện dùng `src/services/sheetsBackend.ts` để đọc/ghi Apps Script.
+- Nếu chưa cấu hình Apps Script, app vẫn chạy bằng dữ liệu mẫu/cache trên trình duyệt.
+- Đây là bản backend database JSON trong Google Sheet. Giai đoạn sau có thể tách từng bảng `CP`, `HCNS`, `Dau`, `HoSo`, `VatTu` nếu cần báo cáo bằng công thức Google Sheets.
