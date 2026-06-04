@@ -1,0 +1,6 @@
+{
+  "name": "Quản Lý Chi Phí & Vật Tư Dự Án",
+  "description": "Phần mềm theo dõi chi phí dự án xây dựng, quỹ HCNS, quỹ Dầu, hồ sơ chứng từ, thời hạn hoàn ứng 15 ngày và quản lý vật tư tồn kho cho kế toán, thủ kho, hành chính.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
