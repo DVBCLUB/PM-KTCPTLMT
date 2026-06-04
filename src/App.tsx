@@ -13,6 +13,7 @@ import InventoryManager from './components/InventoryManager';
 import ReportDashboard from './components/ReportDashboard';
 import { Landmark, Fuel, ClipboardCheck, Boxes, Award, TrendingUp, AlertOctagon, HelpCircle, Settings2 } from 'lucide-react';
 import SettingsPanel, { AppSettings, Employee } from './components/SettingsPanel';
+import { seedData } from './seedData';
 
 export default function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>(UserRole.ACCOUNTANT);
@@ -287,7 +288,14 @@ export default function App() {
           setErrorString(err.message || 'Lỗi kết nối máy chủ');
         }
       } else {
-        setErrorString(err.message || 'Lỗi kết nối máy chủ');
+        // Fallback to local offline seed data for static sites like GitHub Pages!
+        setDb(seedData);
+        localStorage.setItem('trung_hai_db_cache', JSON.stringify(seedData));
+        setErrorString(null);
+        setNotification({
+          message: 'Hệ thống chạy trên GitHub Pages tĩnh (Dữ liệu lưu trữ trình duyệt & GDrive của bạn)!',
+          type: 'success'
+        });
       }
     } finally {
       setLoading(false);
