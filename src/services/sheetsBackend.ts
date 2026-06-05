@@ -28,24 +28,27 @@ export function isBackendConfigured() {
   return Boolean(getBackendConfig().apiUrl.trim());
 }
 
-function withParams(action: string) {
-  const { apiUrl, token } = getBackendConfig();
-  const url = new URL(apiUrl);
-  url.searchParams.set('action', action);
-  if (token) url.searchParams.set('token', token);
-  return url.toString();
-}
-
 async function callBackend<T>(action: string, payload?: unknown): Promise<T> {
-  if (!isBackendConfigured()) {
+  const { apiUrl, token } = getBackendConfig();
+
+  if (!apiUrl.trim()) {
     throw new Error('Chưa cấu hình Apps Script API URL.');
   }
 
-  const method = payload ? 'POST' : 'GET';
-  const response = await fetch(withParams(action), {
-    method,
-    headers: payload ? { 'Content-Type': 'text/plain;charset=utf-8' } : undefined,
-    body: payload ? JSON.stringify({ action, token: getBackendConfig().token, payload }) : undefined,
+  if (!token.trim()) {
+    throw new Error('Chưa nhập token Apps Script.');
+  }
+
+  // Luôn dùng POST để token không lộ trên URL / browser history.
+  // Content-Type text/plain giúp tránh CORS preflight với Apps Script Web App.
+  const response = await fetch(apiUrl.trim(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action,
+      token,
+      payload: payload ?? null,
+    }),
   });
 
   if (!response.ok) {
@@ -111,4 +114,12 @@ export async function saveDatabaseToSheets(database: AppDatabase) {
   if (!isBackendConfigured()) return { synced: false, message: 'Chưa cấu hình Apps Script API URL.' };
   await callBackend<AppDatabase>('saveDatabase', database);
   return { synced: true, message: 'Đã đồng bộ dữ liệu lên Google Sheets.' };
+}
+
+export async function createManualBackendBackup(reason = 'manual_frontend_backup') {
+  await callBackend('createManualBackup', { reason });
+}
+
+export async function validateBackendDatabase() {
+  return await callBackend('validateDatabase');
 }
