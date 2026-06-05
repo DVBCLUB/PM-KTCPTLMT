@@ -30,32 +30,80 @@ export enum UserRole {
   BOSS = 'Giám đốc / Sếp'
 }
 
+export interface ConstructionProject {
+  id: string;
+  code: string;
+  name: string;
+  investor?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  contractValue?: number;
+  status: 'Chuẩn bị' | 'Đang thi công' | 'Tạm dừng' | 'Hoàn thành' | 'Bảo hành' | 'Đóng';
+  manager?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface CostItem {
+  id: string;
+  projectId: string;
+  code: string;
+  name: string;
+  parentId?: string;
+  budgetAmount: number;
+  accountCode?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface Counterparty {
+  id: string;
+  code: string;
+  name: string;
+  type: 'Nhà cung cấp' | 'Nhà thầu phụ' | 'Đội thi công' | 'Cá nhân' | 'Khác';
+  taxCode?: string;
+  phone?: string;
+  address?: string;
+  bankAccount?: string;
+  bankName?: string;
+  contactPerson?: string;
+  notes?: string;
+  createdAt: string;
+}
+
 export interface Expense {
   id: string;
-  requestDate: string; // YYYY-MM-DD
-  actualDate: string;  // YYYY-MM-DD
+  requestDate: string;
+  actualDate: string;
   content: string;
   expenseGroup: string;
   expenseType: string;
+  projectId?: string;
+  costItemId?: string;
+  counterpartyId?: string;
+  accountingDebit?: string;
+  accountingCredit?: string;
   advanceAmount: number;
   actualAmount: number;
-  limitType: string; // e.g. "0", "Theo thực tế", "60k/người", "Theo định mức", "Theo HĐ"
-  clearanceStatus: 'Xong' | 'Đang hoàn ứng'; // Xong corresponds to "Đã hoàn ứng" in PDF
+  limitType: string;
+  clearanceStatus: 'Xong' | 'Đang hoàn ứng';
   documentStatus: 'Đầy đủ' | 'Thiếu chứng từ';
   missingDocuments?: string;
   invoiceNo?: string;
   notes?: string;
   column1?: string;
-  createdByRole: string; // UserRole
+  createdByRole: string;
   createdAt: string;
-  dossierCode?: string; // code of the associated DocumentProgress (HS-xxx)
+  dossierCode?: string;
 }
 
 export interface FundReceipt {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   content: string;
   expenseGroup?: string;
+  projectId?: string;
   amount: number;
   source: 'Ngân sách' | 'Mượn sếp' | 'Khác';
   notes?: string;
@@ -65,34 +113,38 @@ export interface FundReceipt {
 
 export interface DocumentProgress {
   id: string;
-  code: string; // e.g., HS-001
+  code: string;
   name: string;
-  expenseId?: string; // associated expense
+  expenseId?: string;
+  projectId?: string;
+  counterpartyId?: string;
   category: 'Hợp đồng' | 'Hóa đơn' | 'Biên bản nghiệm thu' | 'Biên bản giao nhận' | 'Khác';
   status: 'Soạn thảo' | 'Trình ký' | 'Đã ký duyệt' | 'Hoàn tất' | 'Lưu trữ';
-  updatedAt: string; // YYYY-MM-DD
-  assignedTo: string; // UserRole or specific name
+  updatedAt: string;
+  assignedTo: string;
   notes?: string;
 }
 
 export interface MaterialItem {
   id: string;
-  code: string; // VT-001
+  code: string;
   name: string;
-  unit: string; // Lít, Tấn, Kg, Cái...
-  minStock: number; // Định mức tồn tối thiểu
+  unit: string;
+  minStock: number;
   description?: string;
 }
 
 export interface MaterialTransaction {
   id: string;
   materialId: string;
+  projectId?: string;
+  costItemId?: string;
   type: 'NHẬP' | 'XUẤT';
-  date: string; // YYYY-MM-DD
+  date: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  reference?: string; // e.g. PN-001, PX-001
+  reference?: string;
   person: string;
   notes?: string;
   createdAt: string;
@@ -104,4 +156,7 @@ export interface AppDatabase {
   documents: DocumentProgress[];
   materials: MaterialItem[];
   inventoryTransactions: MaterialTransaction[];
+  projects?: ConstructionProject[];
+  costItems?: CostItem[];
+  counterparties?: Counterparty[];
 }
